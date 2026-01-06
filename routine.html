@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine & Notebook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hide scrollbars but keep scrolling functionality */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        *::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+       
+        /* Hide scrollbars but keep scrolling functionality */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        *::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        /* Mobile landscape warning */
+        @media (max-width: 645px) and (orientation: portrait) {
+            .mobile-warning {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: black;
+                color: white;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                font-size: 24px;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .mobile-warning i {
+                font-size: 48px;
+                margin-bottom: 20px;
+                color: #ff0000;
+                animation: spin 2s linear infinite;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        }
+        
+        .mobile-warning {
+            display: none;
+        }
+
+        :root {
+            --primary-bg: #000000;
+            --primary-text: #ffffff;
+            --routine-width: 66.66%;
+            --notebook-width: 33.33%;
+            --border-color: #333333;
+            --accent-color: #4a6fa5;
+            --checked-color: #2e7d32;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #111;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-text);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: #222;
+            color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #5a8bd5;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            border-color: var(--error-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #f6685e;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* Routine Section */
+        .routine-container {
+            width: var(--routine-width);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-date {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Week View */
+        .week-view {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .day-column {
+            background-color: #111;
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 500px;
+            border: 1px solid var(--border-color);
+        }
+
+        .day-header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .today {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(74, 111, 165, 0.3);
+        }
+
+        .task-box {
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            color: #000;
+            font-weight: 500;
+            overflow: hidden;
+        }
+
+        .task-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .task-time {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 2px;
+        }
+
+        .task-check {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .task-check.checked {
+            background-color: var(--checked-color);
+            color: white;
+        }
+
+        .task-delete {
+            position: absolute;
+            top: 5px;
+            right: 30px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+
+        .task-box:hover .task-delete {
+            opacity: 1;
+        }
+
+        .task-delete:hover {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        /* Day View */
+        .day-view {
+            margin-top: 20px;
+        }
+
+        .time-slot {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+        }
+
+        .time-label {
+            width: 100px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .day-tasks {
+            flex: 1;
+        }
+
+        /* Notebook Section */
+        .notebook-container {
+            width: var(--notebook-width);
+            padding: 20px;
+            border-left: 1px solid var(--border-color);
+            background-color: #0a0a0a;
+            overflow-y: auto;
+        }
+
+        .notebook-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notebook-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .bookmarks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bookmark {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        .bookmark:hover {
+            transform: translateY(-2px);
+        }
+
+        .bookmark.active {
+            border-color: white;
+        }
+
+        .notebook-section {
+            background-color: #111;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .notebook-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .note-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .note-checkbox {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .note-text {
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .note-text.checked {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .add-note {
+            display: flex;
+            margin-top: 15px;
+        }
+
+        .note-input {
+            flex: 1;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px 0 0 6px;
+            color: white;
+        }
+
+        .add-note-btn {
+            padding: 10px 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #111;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option.selected {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .day-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .day-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(244, 67, 54, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .warning-message {
+            color: var(--warning-color);
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 152, 0, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .warning-message.show {
+            display: block;
+        }
+
+        .conflict-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #aaa;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .confirmation-modal.active {
+            display: flex;
+        }
+
+        .confirmation-content {
+            background-color: #111;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .confirmation-text {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .routine-container, .notebook-container {
+                width: 100%;
+            }
+            
+            .notebook-container {
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Daily Routine & Notebook</div>
+        <div class="controls">
+            <button class="btn btn-primary" id="addTaskBtn">
+                <i class="fas fa-plus"></i> Add Task
+            </button>
+            <button class="btn" id="addDayBtn">
+                <i class="fas fa-calendar-plus"></i> Add Day
+            </button>
+            <button class="btn" id="addSectionBtn">
+                <i class="fas fa-bookmark"></i> Add Section
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Routine Section -->
+        <div class="routine-container">
+            <div class="view-controls">
+                <div class="date-navigation">
+                    <button class="btn" id="prevDate"><i class="fas fa-chevron-left"></i></button>
+                    <div class="current-date" id="currentDate">Monday, June 3, 2024</div>
+                    <button class="btn" id="nextDate"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div>
+                    <button class="btn" id="weekViewBtn">Week View</button>
+                    <button class="btn" id="dayViewBtn">Day View</button>
+                </div>
+            </div>
+
+            <!-- Week View -->
+            <div id="weekView" class="week-view">
+                <!-- Days will be generated by JavaScript -->
+            </div>
+
+            <!-- Day View -->
+            <div id="dayView" class="day-view" style="display: none;">
+                <!-- Day tasks will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Notebook Section -->
+        <div class="notebook-container">
+            <div class="notebook-header">
+                <div class="notebook-title">My Notebook</div>
+                <button class="btn" id="toggleChecklist">
+                    <i class="fas fa-check-square"></i> Toggle Checklist
+                </button>
+            </div>
+
+            <div class="bookmarks" id="bookmarks">
+                <!-- Bookmarks will be generated by JavaScript -->
+            </div>
+
+            <div id="notebookSections">
+                <!-- Notebook sections will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">Add New Task</div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label class="form-label">Task Description</label>
+                    <input type="text" class="form-input" id="taskText" placeholder="Enter task description" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" class="form-input" id="startTime" value="06:45" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">End Time</label>
+                    <input type="time" class="form-input" id="endTime" value="07:30" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Days</label>
+                    <div class="day-checkboxes">
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="0" checked> Mon</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="1" checked> Tue</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="2" checked> Wed</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="3" checked> Thu</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="4" checked> Fri</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="5"> Sat</label>
+                        <label class="day-checkbox"><input type="checkbox" name="day" value="6"> Sun</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color</label>
+                    <div class="color-options" id="colorOptions">
+                        <!-- Color options will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="error-message" id="timeError">
+                    <i class="fas fa-exclamation-circle"></i> End time must be after start time.
+                </div>
+                
+                <div class="error-message" id="conflictError">
+                    <i class="fas fa-exclamation-circle"></i> This task conflicts with existing tasks on selected days. Please choose a different time or days.
+                </div>
+                
+                <div class="warning-message" id="conflictWarning">
+                    <i class="fas fa-exclamation-triangle"></i> This task conflicts with existing tasks on the following days:
+                    <div id="conflictDaysList" class="conflict-info"></div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="cancelTask">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Section Modal -->
+    <div class="modal" id="sectionModal">
+        <div class="modal-content">
+            <div class="modal-header">Add Notebook Section</div>
+            <form id="sectionForm">
+                <div class="form-group">
+                    <label class="form-label">Section Name</label>
+                    <input type="text" class="form-input" id="sectionName" placeholder="Enter section name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bookmark Color</label>
+                    <div class="color-options" id="bookmarkColors">
+                        <!-- Color options will be generated by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="cancelSection">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Section</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="confirmation-modal" id="deleteModal">
+        <div class="confirmation-content">
+            <div class="confirmation-text" id="deleteConfirmText">
+                Are you sure you want to delete this task?
+            </div>
+            <div class="confirmation-buttons">
+                <button class="btn" id="cancelDelete">Cancel</button>
+                <button class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate 30 colors that work well with black text
+        const colorPalette = [
+            "#FFB347", "#FF6961", "#77DD77", "#AEC6CF", "#FDFD96", 
+            "#84B6F4", "#F49AC2", "#CFCFC4", "#FFD1DC", "#B39EB5",
+            "#FF9899", "#CB99C9", "#B5EAD7", "#C23B22", "#FFB7B2",
+            "#E2F0CB", "#FFDAC1", "#B5EAD7", "#C7CEEA", "#FF9AA2",
+            "#FFD700", "#98FB98", "#AFEEEE", "#DDA0DD", "#87CEEB",
+            "#F0E68C", "#FFA07A", "#20B2AA", "#778899", "#9370DB"
+        ];
+
+        // Days of the week
+        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        
+        // Initialize current date
+        let currentDate = new Date();
+        // Set to Monday of current week
+        currentDate.setDate(currentDate.getDate() - (currentDate.getDay() + 6) % 7);
+        
+        // Data storage
+        let tasks = JSON.parse(localStorage.getItem('routineTasks')) || [];
+        let notebookSections = JSON.parse(localStorage.getItem('notebookSections')) || [];
+        let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || {};
+        
+        // Task to be deleted
+        let taskToDelete = null;
+        
+        // Initialize notebook sections if empty
+        if (notebookSections.length === 0) {
+            notebookSections = [
+                { id: 1, name: "To-Do", color: "#FF6961", notes: ["Finish routine website", "Buy groceries", "Call mom"] },
+                { id: 2, name: "Notes", color: "#77DD77", notes: ["Meeting at 2 PM tomorrow", "Project deadline next Friday"] },
+                { id: 3, name: "Ideas", color: "#84B6F4", notes: ["Add dark mode toggle", "Implement task categories"] }
+            ];
+            saveNotebookData();
+        }
+
+        // Initialize with some sample tasks if empty
+        if (tasks.length === 0) {
+            tasks = [
+                { id: 1, text: "Morning Exercise", startTime: "06:45", endTime: "07:30", days: [0,1,2,3,4], color: "#77DD77" },
+                { id: 2, text: "Breakfast", startTime: "07:30", endTime: "08:15", days: [0,1,2,3,4,5,6], color: "#FFB347" },
+                { id: 3, text: "Work/Study", startTime: "09:00", endTime: "12:00", days: [0,1,2,3,4], color: "#84B6F4" },
+                { id: 4, text: "Lunch Break", startTime: "12:00", endTime: "13:00", days: [0,1,2,3,4], color: "#FF6961" },
+                { id: 5, text: "Work/Study", startTime: "13:00", endTime: "17:00", days: [0,1,2,3,4], color: "#84B6F4" },
+                { id: 6, text: "Dinner", startTime: "18:30", endTime: "19:30", days: [0,1,2,3,4,5,6], color: "#FFB347" },
+                { id: 7, text: "Relaxation", startTime: "20:00", endTime: "21:30", days: [0,1,2,3,4,5,6], color: "#CB99C9" },
+                { id: 8, text: "Reading", startTime: "21:30", endTime: "22:30", days: [0,1,2,3,4,5,6], color: "#AEC6CF" },
+                { id: 9, text: "Sleep", startTime: "23:00", endTime: "23:30", days: [0,1,2,3,4,5,6], color: "#9370DB" }
+            ];
+            saveTaskData();
+        }
+
+        // DOM Elements
+        const weekView = document.getElementById('weekView');
+        const dayView = document.getElementById('dayView');
+        const currentDateEl = document.getElementById('currentDate');
+        const weekViewBtn = document.getElementById('weekViewBtn');
+        const dayViewBtn = document.getElementById('dayViewBtn');
+        const prevDateBtn = document.getElementById('prevDate');
+        const nextDateBtn = document.getElementById('nextDate');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const addDayBtn = document.getElementById('addDayBtn');
+        const addSectionBtn = document.getElementById('addSectionBtn');
+        const taskModal = document.getElementById('taskModal');
+        const sectionModal = document.getElementById('sectionModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const taskForm = document.getElementById('taskForm');
+        const sectionForm = document.getElementById('sectionForm');
+        const colorOptions = document.getElementById('colorOptions');
+        const bookmarkColors = document.getElementById('bookmarkColors');
+        const bookmarksContainer = document.getElementById('bookmarks');
+        const notebookSectionsContainer = document.getElementById('notebookSections');
+        const toggleChecklistBtn = document.getElementById('toggleChecklist');
+        const timeError = document.getElementById('timeError');
+        const conflictError = document.getElementById('conflictError');
+        const conflictWarning = document.getElementById('conflictWarning');
+        const conflictDaysList = document.getElementById('conflictDaysList');
+        const deleteConfirmText = document.getElementById('deleteConfirmText');
+        const cancelDeleteBtn = document.getElementById('cancelDelete');
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+        
+        let isChecklistMode = false;
+
+        // Initialize the page
+        function init() {
+            // Generate color options for task modal
+            generateColorOptions(colorOptions, colorPalette[0]);
+            
+            // Generate color options for bookmark modal
+            generateColorOptions(bookmarkColors, colorPalette[1]);
+            
+            // Render week view initially
+            updateDateDisplay();
+            renderWeekView();
+            renderNotebook();
+            
+            // Set event listeners
+            setupEventListeners();
+        }
+
+        // Generate color options
+        function generateColorOptions(container, defaultColor) {
+            container.innerHTML = '';
+            colorPalette.forEach(color => {
+                const colorOption = document.createElement('div');
+                colorOption.className = 'color-option';
+                colorOption.style.backgroundColor = color;
+                colorOption.dataset.color = color;
+                
+                if (color === defaultColor) {
+                    colorOption.classList.add('selected');
+                }
+                
+                colorOption.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+                
+                container.appendChild(colorOption);
+            });
+        }
+
+        // Update date display
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateEl.textContent = currentDate.toLocaleDateString('en-US', options);
+        }
+
+        // Render week view
+        function renderWeekView() {
+            weekView.innerHTML = '';
+            
+            // Get the date for each day of the week
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentDate);
+                date.setDate(currentDate.getDate() + i);
+                weekDates.push(date);
+            }
+            
+            // Create day columns
+            weekDates.forEach((date, index) => {
+                const dayColumn = document.createElement('div');
+                dayColumn.className = `day-column ${isToday(date) ? 'today' : ''}`;
+                dayColumn.dataset.dayIndex = index;
+                
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = `${daysOfWeek[index]} ${date.getDate()}`;
+                
+                dayColumn.appendChild(dayHeader);
+                
+                // Get tasks for this day
+                const dayTasks = tasks.filter(task => task.days.includes(index));
+                
+                // Sort tasks by start time
+                dayTasks.sort((a, b) => {
+                    return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+                });
+                
+                // Add tasks to the day
+                dayTasks.forEach(task => {
+                    const taskBox = createTaskBox(task, index, date);
+                    dayColumn.appendChild(taskBox);
+                });
+                
+                weekView.appendChild(dayColumn);
+            });
+        }
+
+        // Render day view
+        function renderDayView() {
+            dayView.innerHTML = '';
+            
+            // Get the current day index (0 = Monday, 6 = Sunday)
+            const dayIndex = (currentDate.getDay() + 6) % 7;
+            
+            // Get tasks for this day
+            const dayTasks = tasks.filter(task => task.days.includes(dayIndex));
+            
+            // Sort tasks by start time
+            dayTasks.sort((a, b) => {
+                return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+            });
+            
+            // Create time slots from 6:45 AM to 11:30 PM
+            const startHour = 6;
+            const endHour = 23;
+            
+            for (let hour = startHour; hour <= endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += 15) {
+                    if (hour === endHour && minute > 30) break;
+                    
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+                    
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    
+                    const period = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                    const timeString = `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+                    timeLabel.textContent = timeString;
+                    
+                    timeSlot.appendChild(timeLabel);
+                    
+                    const dayTasksContainer = document.createElement('div');
+                    dayTasksContainer.className = 'day-tasks';
+                    
+                    // Get tasks for this time slot
+                    const timeString24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    const tasksForTime = dayTasks.filter(task => {
+                        const taskStart = task.startTime;
+                        return taskStart === timeString24;
+                    });
+                    
+                    // Add tasks for this time
+                    tasksForTime.forEach(task => {
+                        const taskBox = createTaskBox(task, dayIndex, currentDate);
+                        dayTasksContainer.appendChild(taskBox);
+                    });
+                    
+                    timeSlot.appendChild(dayTasksContainer);
+                    dayView.appendChild(timeSlot);
+                }
+            }
+        }
+
+        // Create a task box
+        function createTaskBox(task, dayIndex, date) {
+            const taskBox = document.createElement('div');
+            taskBox.className = 'task-box';
+            taskBox.style.backgroundColor = task.color;
+            taskBox.dataset.taskId = task.id;
+            taskBox.title = `Click to toggle completion\nRight-click to delete`;
+            
+            const taskTime = document.createElement('div');
+            taskTime.className = 'task-time';
+            
+            // Format time for display
+            const formatTime = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':');
+                const hour = parseInt(hours);
+                const period = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                return `${displayHour}:${minutes} ${period}`;
+            };
+            
+            taskTime.textContent = `${formatTime(task.startTime)} - ${formatTime(task.endTime)}`;
+            
+            const taskText = document.createElement('div');
+            taskText.textContent = task.text;
+            
+            const taskCheck = document.createElement('div');
+            taskCheck.className = 'task-check';
+            
+            // Check if this task is completed for this date
+            const dateStr = date.toISOString().split('T')[0];
+            const completedKey = `${dateStr}-${task.id}`;
+            if (completedTasks[completedKey]) {
+                taskCheck.classList.add('checked');
+                taskCheck.innerHTML = '<i class="fas fa-check"></i>';
+            }
+            
+            taskCheck.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('checked');
+                
+                // Update completed tasks
+                if (this.classList.contains('checked')) {
+                    completedTasks[completedKey] = true;
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    delete completedTasks[completedKey];
+                    this.innerHTML = '';
+                }
+                
+                saveCompletedTasks();
+            });
+            
+            const taskDelete = document.createElement('div');
+            taskDelete.className = 'task-delete';
+            taskDelete.innerHTML = '<i class="fas fa-times"></i>';
+            taskDelete.title = 'Delete this task';
+            
+            taskDelete.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showDeleteConfirmation(task);
+            });
+            
+            // Right-click to delete
+            taskBox.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showDeleteConfirmation(task);
+            });
+            
+            taskBox.appendChild(taskTime);
+            taskBox.appendChild(taskText);
+            taskBox.appendChild(taskCheck);
+            taskBox.appendChild(taskDelete);
+            
+            return taskBox;
+        }
+
+        // Show delete confirmation modal
+        function showDeleteConfirmation(task) {
+            taskToDelete = task;
+            deleteConfirmText.textContent = `Are you sure you want to delete "${task.text}"?`;
+            deleteModal.classList.add('active');
+        }
+
+        // Delete a task
+        function deleteTask(taskId) {
+            tasks = tasks.filter(task => task.id !== taskId);
+            saveTaskData();
+            
+            // Also remove completion records for this task
+            Object.keys(completedTasks).forEach(key => {
+                if (key.includes(`-${taskId}`)) {
+                    delete completedTasks[key];
+                }
+            });
+            saveCompletedTasks();
+            
+            // Re-render views
+            if (weekView.style.display !== 'none') {
+                renderWeekView();
+            } else {
+                renderDayView();
+            }
+        }
+
+        // Check for time conflicts
+        function checkTimeConflict(newTask, excludeTaskId = null) {
+            const newStart = timeToMinutes(newTask.startTime);
+            const newEnd = timeToMinutes(newTask.endTime);
+            
+            // Validate time order
+            if (newEnd <= newStart) {
+                return { hasError: true, errorType: 'timeOrder' };
+            }
+            
+            const conflicts = [];
+            
+            // Check each selected day
+            newTask.days.forEach(day => {
+                // Find existing tasks on this day
+                const existingTasks = tasks.filter(task => {
+                    if (excludeTaskId && task.id === excludeTaskId) return false;
+                    return task.days.includes(day);
+                });
+                
+                // Check for conflicts with each existing task
+                existingTasks.forEach(existingTask => {
+                    const existingStart = timeToMinutes(existingTask.startTime);
+                    const existingEnd = timeToMinutes(existingTask.endTime);
+                    
+                    // Check if time ranges overlap
+                    if ((newStart < existingEnd && newEnd > existingStart)) {
+                        conflicts.push({
+                            day: day,
+                            existingTask: existingTask,
+                            conflictType: newStart >= existingStart && newEnd <= existingEnd ? 'within' :
+                                         newStart < existingStart && newEnd > existingStart && newEnd <= existingEnd ? 'startsBefore' :
+                                         newStart >= existingStart && newStart < existingEnd && newEnd > existingEnd ? 'endsAfter' :
+                                         'overlaps'
+                        });
+                    }
+                });
+            });
+            
+            return {
+                hasError: conflicts.length > 0,
+                errorType: 'conflict',
+                conflicts: conflicts
+            };
+        }
+
+        // Convert time string to minutes
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // Render notebook
+        function renderNotebook() {
+            // Clear containers
+            bookmarksContainer.innerHTML = '';
+            notebookSectionsContainer.innerHTML = '';
+            
+            // Create bookmarks and sections
+            notebookSections.forEach((section, index) => {
+                // Create bookmark
+                const bookmark = document.createElement('div');
+                bookmark.className = 'bookmark';
+                if (index === 0) bookmark.classList.add('active');
+                bookmark.style.backgroundColor = section.color;
+                bookmark.textContent = section.name;
+                bookmark.dataset.sectionId = section.id;
+                
+                bookmark.addEventListener('click', function() {
+                    // Set active bookmark
+                    document.querySelectorAll('.bookmark').forEach(bm => {
+                        bm.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    document.querySelectorAll('.notebook-section').forEach(sec => {
+                        sec.classList.remove('active');
+                    });
+                    document.getElementById(`section-${section.id}`).classList.add('active');
+                });
+                
+                bookmarksContainer.appendChild(bookmark);
+                
+                // Create section
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'notebook-section';
+                sectionEl.id = `section-${section.id}`;
+                if (index === 0) sectionEl.classList.add('active');
+                
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'section-header';
+                
+                const sectionTitle = document.createElement('div');
+                sectionTitle.className = 'section-title';
+                sectionTitle.textContent = section.name;
+                
+                const deleteSectionBtn = document.createElement('button');
+                deleteSectionBtn.className = 'btn';
+                deleteSectionBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteSectionBtn.addEventListener('click', function() {
+                    if (confirm(`Delete section "${section.name}"?`)) {
+                        deleteNotebookSection(section.id);
+                    }
+                });
+                
+                sectionHeader.appendChild(sectionTitle);
+                sectionHeader.appendChild(deleteSectionBtn);
+                
+                sectionEl.appendChild(sectionHeader);
+                
+                // Add notes
+                const notesContainer = document.createElement('div');
+                
+                section.notes.forEach((note, noteIndex) => {
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    
+                    const noteCheckbox = document.createElement('input');
+                    noteCheckbox.type = 'checkbox';
+                    noteCheckbox.className = 'note-checkbox';
+                    noteCheckbox.style.display = isChecklistMode ? 'block' : 'none';
+                    noteCheckbox.checked = note.startsWith('[x] ');
+                    
+                    const noteText = document.createElement('div');
+                    noteText.className = 'note-text';
+                    noteText.textContent = note.startsWith('[x] ') || note.startsWith('[ ] ') ? note.substring(4) : note;
+                    
+                    if (note.startsWith('[x] ')) {
+                        noteText.classList.add('checked');
+                    }
+                    
+                    noteCheckbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            noteText.classList.add('checked');
+                            section.notes[noteIndex] = '[x] ' + noteText.textContent;
+                        } else {
+                            noteText.classList.remove('checked');
+                            section.notes[noteIndex] = '[ ] ' + noteText.textContent;
+                        }
+                        saveNotebookData();
+                    });
+                    
+                    noteItem.appendChild(noteCheckbox);
+                    noteItem.appendChild(noteText);
+                    notesContainer.appendChild(noteItem);
+                });
+                
+                sectionEl.appendChild(notesContainer);
+                
+                // Add note input
+                const addNoteContainer = document.createElement('div');
+                addNoteContainer.className = 'add-note';
+                
+                const noteInput = document.createElement('input');
+                noteInput.type = 'text';
+                noteInput.className = 'note-input';
+                noteInput.placeholder = 'Add a new note...';
+                
+                const addNoteBtn = document.createElement('button');
+                addNoteBtn.className = 'add-note-btn';
+                addNoteBtn.innerHTML = '<i class="fas fa-plus"></i>';
+                
+                addNoteBtn.addEventListener('click', function() {
+                    if (noteInput.value.trim()) {
+                        const prefix = isChecklistMode ? '[ ] ' : '';
+                        section.notes.push(prefix + noteInput.value.trim());
+                        saveNotebookData();
+                        renderNotebook();
+                        noteInput.value = '';
+                    }
+                });
+                
+                noteInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addNoteBtn.click();
+                    }
+                });
+                
+                addNoteContainer.appendChild(noteInput);
+                addNoteContainer.appendChild(addNoteBtn);
+                sectionEl.appendChild(addNoteContainer);
+                
+                notebookSectionsContainer.appendChild(sectionEl);
+            });
+        }
+
+        // Save data to localStorage
+        function saveTaskData() {
+            localStorage.setItem('routineTasks', JSON.stringify(tasks));
+        }
+        
+        function saveNotebookData() {
+            localStorage.setItem('notebookSections', JSON.stringify(notebookSections));
+        }
+        
+        function saveCompletedTasks() {
+            localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+        }
+
+        // Check if a date is today
+        function isToday(date) {
+            const today = new Date();
+            return date.getDate() === today.getDate() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getFullYear() === today.getFullYear();
+        }
+
+        // Delete notebook section
+        function deleteNotebookSection(sectionId) {
+            notebookSections = notebookSections.filter(section => section.id !== sectionId);
+            saveNotebookData();
+            renderNotebook();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // View toggle buttons
+            weekViewBtn.addEventListener('click', function() {
+                weekView.style.display = 'grid';
+                dayView.style.display = 'none';
+                weekViewBtn.classList.add('btn-primary');
+                dayViewBtn.classList.remove('btn-primary');
+                renderWeekView();
+            });
+            
+            dayViewBtn.addEventListener('click', function() {
+                weekView.style.display = 'none';
+                dayView.style.display = 'block';
+                dayViewBtn.classList.add('btn-primary');
+                weekViewBtn.classList.remove('btn-primary');
+                renderDayView();
+            });
+            
+            // Date navigation
+            prevDateBtn.addEventListener('click', function() {
+                currentDate.setDate(currentDate.getDate() - 7);
+                updateDateDisplay();
+                if (weekView.style.display !== 'none') {
+                    renderWeekView();
+                } else {
+                    renderDayView();
+                }
+            });
+            
+            nextDateBtn.addEventListener('click', function() {
+                currentDate.setDate(currentDate.getDate() + 7);
+                updateDateDisplay();
+                if (weekView.style.display !== 'none') {
+                    renderWeekView();
+                } else {
+                    renderDayView();
+                }
+            });
+            
+            // Add task button
+            addTaskBtn.addEventListener('click', function() {
+                // Reset error messages
+                timeError.classList.remove('show');
+                conflictError.classList.remove('show');
+                conflictWarning.classList.remove('show');
+                taskModal.classList.add('active');
+            });
+            
+            // Add day button
+            addDayBtn.addEventListener('click', function() {
+                // Reset completed tasks for the new week but keep past data
+                // In a real implementation, this would create a new week template
+                alert("New week added! Your past routine data is preserved and can be accessed by navigating back.");
+                
+                // For demo purposes, we'll just advance to next week
+                currentDate.setDate(currentDate.getDate() + 7);
+                updateDateDisplay();
+                if (weekView.style.display !== 'none') {
+                    renderWeekView();
+                } else {
+                    renderDayView();
+                }
+            });
+            
+            // Add section button
+            addSectionBtn.addEventListener('click', function() {
+                sectionModal.classList.add('active');
+            });
+            
+            // Cancel buttons
+            document.getElementById('cancelTask').addEventListener('click', function() {
+                taskModal.classList.remove('active');
+                taskForm.reset();
+                // Reset error messages
+                timeError.classList.remove('show');
+                conflictError.classList.remove('show');
+                conflictWarning.classList.remove('show');
+            });
+            
+            document.getElementById('cancelSection').addEventListener('click', function() {
+                sectionModal.classList.remove('active');
+                sectionForm.reset();
+            });
+            
+            // Delete confirmation buttons
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.classList.remove('active');
+                taskToDelete = null;
+            });
+            
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (taskToDelete) {
+                    deleteTask(taskToDelete.id);
+                    deleteModal.classList.remove('active');
+                    taskToDelete = null;
+                }
+            });
+            
+            // Toggle checklist mode
+            toggleChecklistBtn.addEventListener('click', function() {
+                isChecklistMode = !isChecklistMode;
+                
+                // Update button text
+                if (isChecklistMode) {
+                    this.innerHTML = '<i class="fas fa-paragraph"></i> Toggle Text Mode';
+                } else {
+                    this.innerHTML = '<i class="fas fa-check-square"></i> Toggle Checklist';
+                }
+                
+                // Re-render notebook to show/hide checkboxes
+                renderNotebook();
+            });
+            
+            // Validate time inputs in real-time
+            document.getElementById('startTime').addEventListener('change', validateTaskTimes);
+            document.getElementById('endTime').addEventListener('change', validateTaskTimes);
+            
+            // Task form submission
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const taskText = document.getElementById('taskText').value;
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                const selectedColor = document.querySelector('#colorOptions .color-option.selected').dataset.color;
+                
+                // Get selected days
+                const selectedDays = [];
+                document.querySelectorAll('input[name="day"]:checked').forEach(checkbox => {
+                    selectedDays.push(parseInt(checkbox.value));
+                });
+                
+                // Create new task object
+                const newTask = {
+                    id: Date.now(), // Simple ID generation
+                    text: taskText,
+                    startTime: startTime,
+                    endTime: endTime,
+                    days: selectedDays,
+                    color: selectedColor
+                };
+                
+                // Check for time conflicts
+                const conflictCheck = checkTimeConflict(newTask);
+                
+                if (conflictCheck.hasError) {
+                    if (conflictCheck.errorType === 'timeOrder') {
+                        timeError.classList.add('show');
+                        conflictError.classList.remove('show');
+                        conflictWarning.classList.remove('show');
+                    } else if (conflictCheck.errorType === 'conflict') {
+                        timeError.classList.remove('show');
+                        conflictError.classList.add('show');
+                        conflictWarning.classList.remove('show');
+                        
+                        // Show conflict details
+                        conflictDaysList.innerHTML = '';
+                        const conflictDays = [...new Set(conflictCheck.conflicts.map(c => daysOfWeek[c.day]))];
+                        conflictDays.forEach(day => {
+                            const dayEl = document.createElement('div');
+                            dayEl.textContent = day;
+                            conflictDaysList.appendChild(dayEl);
+                        });
+                    }
+                    return; // Don't submit the form
+                }
+                
+                // If no errors, add the task
+                tasks.push(newTask);
+                saveTaskData();
+                
+                // Close modal and reset form
+                taskModal.classList.remove('active');
+                taskForm.reset();
+                
+                // Reset error messages
+                timeError.classList.remove('show');
+                conflictError.classList.remove('show');
+                conflictWarning.classList.remove('show');
+                
+                // Re-render views
+                if (weekView.style.display !== 'none') {
+                    renderWeekView();
+                } else {
+                    renderDayView();
+                }
+            });
+            
+            // Validate time inputs
+            function validateTaskTimes() {
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                
+                if (startTime && endTime) {
+                    const startMinutes = timeToMinutes(startTime);
+                    const endMinutes = timeToMinutes(endTime);
+                    
+                    if (endMinutes <= startMinutes) {
+                        timeError.classList.add('show');
+                    } else {
+                        timeError.classList.remove('show');
+                    }
+                }
+            }
+            
+            // Section form submission
+            sectionForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const sectionName = document.getElementById('sectionName').value;
+                const selectedColor = document.querySelector('#bookmarkColors .color-option.selected').dataset.color;
+                
+                // Create new section
+                const newSection = {
+                    id: Date.now(),
+                    name: sectionName,
+                    color: selectedColor,
+                    notes: []
+                };
+                
+                notebookSections.push(newSection);
+                saveNotebookData();
+                
+                // Close modal and reset form
+                sectionModal.classList.remove('active');
+                sectionForm.reset();
+                
+                // Re-render notebook
+                renderNotebook();
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === taskModal) {
+                    taskModal.classList.remove('active');
+                    // Reset error messages
+                    timeError.classList.remove('show');
+                    conflictError.classList.remove('show');
+                    conflictWarning.classList.remove('show');
+                }
+                if (e.target === sectionModal) {
+                    sectionModal.classList.remove('active');
+                }
+                if (e.target === deleteModal) {
+                    deleteModal.classList.remove('active');
+                    taskToDelete = null;
+                }
+            });
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
