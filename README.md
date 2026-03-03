@@ -2,6 +2,9 @@
 
 A clean, responsive web application for managing your daily schedule and keeping organized notes. This tool features a compact week-view for class schedules and a detailed day-view for specific tasks, plus a persistent notebook with customizable sections.
 
+### 🌐 Live Demo
+**[tasdidnoor.com/Routine](https://tasdidnoor.com/Routine)**
+
 ![Screenshot of Daily Routine](https://raw.githubusercontent.com/tasdidnoor/Routine/main/screenshot.png) *(Optional: You can add a real screenshot later!)*
 
 ## 🚀 Features
