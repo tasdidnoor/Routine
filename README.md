@@ -5,7 +5,7 @@ A clean, responsive web application for managing your daily schedule and keeping
 ### 🌐 Live Demo
 **[tasdidnoor.com/Routine](https://tasdidnoor.com/Routine)**
 
-![Screenshot of Daily Routine](https://raw.githubusercontent.com/tasdidnoor/Routine/main/screenshot.png) *(Optional: You can add a real screenshot later!)*
+![Screenshot of Daily Routine](https://raw.githubusercontent.com/tasdidnoor/Assets/main/Routine/README.png)
 
 ## 🚀 Features
 
